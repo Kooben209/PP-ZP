@@ -54,13 +54,13 @@ for k, v in filtered_dict.items():
 		print(checkURL)
 		
 	if os.environ.get('MORPH_MAXDAYS') == "0":
-		checkURL = checkURL.replace("&maxDaysSinceAdded=1","")
+		checkURL = checkURL.replace("added=24_hours&","")
 
 	driver.get(checkURL)
 	try:
 		numOfResults = driver.find_element_by_css_selector('.listing-results-utils-count').text.replace(" ", "").split("of")
 		numOfResults = int(numOfResults[1])
-		numOfPages = math.ceil(float(numOfResults)/25)
+		numOfPages = math.ceil(float(numOfResults)/100)
 	except ValueError:
 		numOfPages = 0	
 
