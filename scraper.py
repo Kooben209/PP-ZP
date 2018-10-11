@@ -11,7 +11,7 @@ from decimal import Decimal
 from dateutil.parser import parse
 import math
 import requests
-from urllib import parse
+import urllib.parse as urlparse
 
 def parseAskingPrice(aPrice):
 	try:
@@ -48,8 +48,8 @@ with requests.session() as s:
 		if os.environ.get('MORPH_MAXDAYS') == "0":
 			checkURL = checkURL.replace("added=24_hours&","")
 			
-		parsedURL = parse.urlparse(checkURL)
-		params = parse.parse_qs(parsedURL.query)
+		parsedURL = urlparse.urlparse(checkURL)
+		params = urlparse.parse_qs(parsedURL.query)
 		if 'page_size' in params:
 			pageSize = params['page_size'][0]
 		else:
