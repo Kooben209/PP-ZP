@@ -33,8 +33,8 @@ def parseAskingPrice(aPrice):
 	
 def saveToStore(data):
 	scraperwiki.sqlite.execute("CREATE TABLE IF NOT EXISTS 'zpdata' ( 'propId' TEXT, link TEXT, title TEXT, address TEXT, price BIGINT, 'displayPrice' TEXT, image1 TEXT, 'pubDate' DATETIME, 'addedOrReduced' DATE, reduced BOOLEAN, location TEXT, CHECK (reduced IN (0, 1)), PRIMARY KEY('propId'))")
-	scraperwiki.sqlite.execute("CREATE UNIQUE INDEX IF NOT EXISTS 'swdata_propId_unique' ON 'data' ('propId')")
-	scraperwiki.sqlite.execute("INSERT OR IGNORE INTO 'data' VALUES (?,?,?,?,?,?,?,?,?,?,?)", (data['propId'], data['link'], data['title'], data['address'], data['price'], data['displayPrice'], data['image1'], data['pubDate'], data['addedOrReduced'], data['reduced'], data['location']))
+	scraperwiki.sqlite.execute("CREATE UNIQUE INDEX IF NOT EXISTS 'zpdata_propId_unique' ON 'zpdata' ('propId')")
+	scraperwiki.sqlite.execute("INSERT OR IGNORE INTO 'zpdata' VALUES (?,?,?,?,?,?,?,?,?,?,?)", (data['propId'], data['link'], data['title'], data['address'], data['price'], data['displayPrice'], data['image1'], data['pubDate'], data['addedOrReduced'], data['reduced'], data['location']))
 	
 excludeAgents = ['andrew granger']
 
