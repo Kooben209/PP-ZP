@@ -51,7 +51,7 @@ with requests.session() as s:
 		parsedURL = urlparse.urlparse(checkURL)
 		params = urlparse.parse_qs(parsedURL.query)
 		if 'page_size' in params:
-			pageSize = params['page_size'][0]
+			pageSize = int(params['page_size'][0])
 		else:
 			pageSize = 25
 		
