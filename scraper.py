@@ -126,6 +126,7 @@ with requests.session() as s:
 						saveToStore(advertMatch)
 						
 						matches += 1
+				print("Found "+str(matches)+" Matches from "+str(numResults)+" Items of which "+str(numFeat)+" are Featured")
 				if matches == 0 or (numResults-numFeat-2)>matches:
 					break		
 			else:
