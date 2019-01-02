@@ -25,6 +25,7 @@ def saveToStore(data):
 	scraperwiki.sqlite.execute("CREATE UNIQUE INDEX IF NOT EXISTS 'zpdata_propId_unique' ON 'zpdata' ('propId')")
 	scraperwiki.sqlite.execute("INSERT OR IGNORE INTO 'zpdata' VALUES (?,?,?,?,?,?,?,?,?,?,?)", (data['propId'], data['link'], data['title'], data['address'], data['price'], data['displayPrice'], data['image1'], data['pubDate'], data['addedOrReduced'], data['reduced'], data['location']))
 
+excludeAgents = []
 if os.environ.get("MORPH_EXCLUDE_AGENTS") is not None:
 	excludeAgentsString = os.environ["MORPH_EXCLUDE_AGENTS"]
 	excludeAgents = excludeAgentsString.lower().split("^")
