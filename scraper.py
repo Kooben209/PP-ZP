@@ -136,7 +136,7 @@ with requests.session() as s:
 							addedOrReduced = datetime.now().date()
 						advertMatch['propId'] = propId
 						advertMatch['link'] = propLink
-						advertMatch['title'] = title
+						advertMatch['title'] = title.replace('Just added','').strip()
 						advertMatch['address'] = address
 						advertMatch['price'] = price
 						advertMatch['displayPrice'] = displayPrice
