@@ -12,6 +12,10 @@ from dateutil.parser import parse
 import math
 import requests
 import urllib.parse as urlparse
+import random
+
+import setEnvs
+
 
 def parseAskingPrice(aPrice):
 	try:
@@ -21,9 +25,9 @@ def parseAskingPrice(aPrice):
 	return value
 	
 def saveToStore(data):
-	scraperwiki.sqlite.execute("CREATE TABLE IF NOT EXISTS 'zpdata' ( 'propId' TEXT, link TEXT, title TEXT, address TEXT, price BIGINT, 'displayPrice' TEXT, image1 TEXT, 'pubDate' DATETIME, 'addedOrReduced' DATE, reduced BOOLEAN, location TEXT, CHECK (reduced IN (0, 1)), PRIMARY KEY('propId'))")
+	scraperwiki.sqlite.execute("CREATE TABLE IF NOT EXISTS 'zpdata' ( 'propId' TEXT, link TEXT, title TEXT, address TEXT, price BIGINT, 'displayPrice' TEXT, image1 TEXT, 'pubDate' DATETIME, 'addedOrReduced' DATE, reduced BOOLEAN, location TEXT,hashTagLocation TEXT, postContent TEXT, CHECK (reduced IN (0, 1)), PRIMARY KEY('propId'))")
 	scraperwiki.sqlite.execute("CREATE UNIQUE INDEX IF NOT EXISTS 'zpdata_propId_unique' ON 'zpdata' ('propId')")
-	scraperwiki.sqlite.execute("INSERT OR IGNORE INTO 'zpdata' VALUES (?,?,?,?,?,?,?,?,?,?,?)", (data['propId'], data['link'], data['title'], data['address'], data['price'], data['displayPrice'], data['image1'], data['pubDate'], data['addedOrReduced'], data['reduced'], data['location']))
+	scraperwiki.sqlite.execute("INSERT OR IGNORE INTO 'zpdata' VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", (data['propId'], data['link'], data['title'], data['address'], data['price'], data['displayPrice'], data['image1'], data['pubDate'], data['addedOrReduced'], data['reduced'], data['location'],data['hashTagLocation'],data['postContent']))
 
 excludeAgents = []
 if os.environ.get("MORPH_EXCLUDE_AGENTS") is not None:
@@ -31,9 +35,22 @@ if os.environ.get("MORPH_EXCLUDE_AGENTS") is not None:
 	excludeAgents = excludeAgentsString.lower().split("^")
 
 filtered_dict = {k:v for (k,v) in os.environ.items() if 'MORPH_URL' in k}
+postTemplates = {k:v for (k,v) in os.environ.items() if 'ENTRYTEXT' in k}
 
 sleepTime = 5
 domain = ""
+
+if os.environ.get("MORPH_DB_ADD_COL") is not None:
+	if os.environ.get("MORPH_DB_ADD_COL") == '1':
+		try:
+			scraperwiki.sqlite.execute('ALTER TABLE zpdata ADD COLUMN hashTagLocation TEXT')
+		except:
+			print('col - hashTagLocation exists')
+		try:
+			scraperwiki.sqlite.execute('ALTER TABLE zpdata ADD COLUMN postContent TEXT')
+		except:
+			print('col - postContent exists')
+
 if os.environ.get("MORPH_SLEEP") is not None:
 	sleepTime = int(os.environ["MORPH_SLEEP"])
 
@@ -88,11 +105,14 @@ with requests.session() as s:
 					reduced=False
 					if advert.find("div", {"class" : "listing-results-wrapper"}) is not None:
 						advertMatch = {}
+						postKey = random.choice(list(postTemplates))
+						random.shuffle(list(postTemplates))
 						agent = advert.find("p", {"class" : "top-half listing-results-marketed"}).find("span").text
 						
 						if any(x in agent.lower() for x in excludeAgents):
 							continue;
 
+						hashTagLocation = k.replace("MORPH_URL_","").replace("_"," ").title().replace(" ","")
 						location = k.replace("MORPH_URL_","").replace("_"," ").title()
 						propLink=domain+advert.find("a", {"class" : "listing-results-price text-price"}).get('href')
 						propId=re.search('\d+',propLink.split("?")[0])
@@ -125,7 +145,9 @@ with requests.session() as s:
 						advertMatch['addedOrReduced'] = addedOrReduced
 						advertMatch['reduced'] = reduced
 						advertMatch['location'] = location
-						
+						advertMatch['hashTagLocation'] = hashTagLocation
+						advertMatch['postContent'] = postTemplates[postKey].format(title, hashTagLocation, displayPrice)
+
 						saveToStore(advertMatch)
 						
 						matches += 1
