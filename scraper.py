@@ -139,7 +139,7 @@ with requests.session() as s:
 						advertMatch['title'] = title.replace('Just added','').strip()
 						advertMatch['address'] = address
 						advertMatch['price'] = price
-						advertMatch['displayPrice'] = displayPrice
+						advertMatch['displayPrice'] = displayPrice.replace('Just added','').strip()
 						advertMatch['image1'] = image1
 						advertMatch['pubDate'] = datetime.now()
 						advertMatch['addedOrReduced'] = addedOrReduced
