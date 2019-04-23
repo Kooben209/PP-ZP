@@ -145,7 +145,7 @@ with requests.session() as s:
 						advertMatch['addedOrReduced'] = addedOrReduced
 						advertMatch['reduced'] = reduced
 						advertMatch['location'] = location
-						advertMatch['hashTagLocation'] = hashTagLocation
+						advertMatch['hashTagLocation'] = address
 						advertMatch['postContent'] = postTemplates[postKey].format(title, hashTagLocation, displayPrice)
 
 						saveToStore(advertMatch)
